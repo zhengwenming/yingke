@@ -10,7 +10,6 @@
 //#import "UIView+YYAdd.h"
 //#import "LFLiveSession.h"
 #import "UIControl+Add.h"
-
 #import "LFLiveKit.h"
 
 inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
@@ -39,7 +38,6 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
 
 @property (nonatomic, strong) UIButton *beautyButton;  //美颜
 @property (nonatomic, strong) UIButton *cameraButton;  //相机
-@property (nonatomic, strong) UIButton *closeButton;  //关闭
 @property (nonatomic, strong) UIButton *startLiveButton; //开始直播
 @property (nonatomic, strong) UIView *containerView;   
 @property (nonatomic, strong) LFLiveDebug *debugInfo;
@@ -68,6 +66,9 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
         [self.containerView addSubview:self.cameraButton];
         [self.containerView addSubview:self.beautyButton];
         [self.containerView addSubview:self.startLiveButton];
+//        [self.containerView addSubview:self.meibaiSlider];
+//        [self.containerView addSubview:self.mopiSlider];
+        
     }
     return self;
 }
@@ -136,7 +137,7 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
         _stateLabel.text = @"连接中";
         break;
     case LFLiveStart:
-        _stateLabel.text = @"已连接";
+        _stateLabel.text = @"直播中";
         break;
     case LFLiveError:
         _stateLabel.text = @"连接错误";
@@ -283,7 +284,33 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
     }
     return _stateLabel;
 }
+- (UISlider *)mopiSlider {
+    if (!_mopiSlider) {
+        _mopiSlider = [UISlider new];
+        _mopiSlider.minimumValue = 0.0;
+//        [_mopiSlider setThumbImage:[UIImage imageNamed:@"dot"]  forState:UIControlStateNormal];
+        _mopiSlider.minimumTrackTintColor = [UIColor greenColor];
+        _mopiSlider.maximumTrackTintColor = [UIColor lightGrayColor];
+        _mopiSlider.value = 0.0;//指定初始值
+        _mopiSlider.frame = CGRectMake(0, self.meibaiSlider.frame.origin.y-self.meibaiSlider.frame.size.height-10, self.containerView.frame.size.width, 30);
 
+    }
+    return _mopiSlider;
+}
+
+
+- (UISlider *)meibaiSlider {
+    if (!_meibaiSlider) {
+        _meibaiSlider = [UISlider new];
+        _meibaiSlider.minimumValue = 0.0;
+//        [_meibaiSlider setThumbImage:[UIImage imageNamed:@"dot"]  forState:UIControlStateNormal];
+        _meibaiSlider.minimumTrackTintColor = [UIColor greenColor];
+       _meibaiSlider.maximumTrackTintColor = [UIColor lightGrayColor];
+        _meibaiSlider.value = 0.0;//指定初始值
+        _meibaiSlider.frame = CGRectMake(0, self.startLiveButton.frame.origin.y-self.startLiveButton.frame.size.height-10, self.containerView.frame.size.width, 30);
+    }
+    return _meibaiSlider;
+}
 - (UIButton *)closeButton {
     if (!_closeButton) {
         _closeButton = [UIButton new];
@@ -292,28 +319,9 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
         _closeButton.top = 20;
         [_closeButton setImage:[UIImage imageNamed:@"close_preview"] forState:UIControlStateNormal];
         _closeButton.exclusiveTouch = YES;
-        
-        
-        [_closeButton addTarget:self action:@selector(closeClick) forControlEvents:UIControlEventTouchUpInside];
-        
-//        [_closeButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id sender) {
-//            
-//            NSLog(@"点击了叉叉");
-//            
-//
-//        }];
     }
     return _closeButton;
 }
-
-- (void)closeClick{
-    
-    if (self.block) {
-        self.block();
-    }
-    
-}
-
 
 - (UIButton *)cameraButton {
     if (!_cameraButton) {
@@ -322,10 +330,10 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
         _cameraButton.origin = CGPointMake(_closeButton.left - 10 - _cameraButton.width, 20);
         [_cameraButton setImage:[UIImage imageNamed:@"camra_preview"] forState:UIControlStateNormal];
         _cameraButton.exclusiveTouch = YES;
-        __weak typeof(self) _self = self;
+        __weak typeof(self) weakSelf = self;
         [_cameraButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id sender) {
-            AVCaptureDevicePosition devicePositon = _self.session.captureDevicePosition;
-            _self.session.captureDevicePosition = (devicePositon == AVCaptureDevicePositionBack) ? AVCaptureDevicePositionFront : AVCaptureDevicePositionBack;
+            AVCaptureDevicePosition devicePositon = weakSelf.session.captureDevicePosition;
+            weakSelf.session.captureDevicePosition = (devicePositon == AVCaptureDevicePositionBack) ? AVCaptureDevicePositionFront : AVCaptureDevicePositionBack;
         }];
     }
     return _cameraButton;
@@ -339,10 +347,10 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
         [_beautyButton setImage:[UIImage imageNamed:@"camra_beauty"] forState:UIControlStateSelected];
         [_beautyButton setImage:[UIImage imageNamed:@"camra_beauty_close"] forState:UIControlStateNormal];
         _beautyButton.exclusiveTouch = YES;
-        __weak typeof(self) _self = self;
+        __weak typeof(self) weakSelf = self;
         [_beautyButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id sender) {
-            _self.session.beautyFace = !_self.session.beautyFace;
-            _self.beautyButton.selected = !_self.session.beautyFace;
+            weakSelf.session.beautyFace = !weakSelf.session.beautyFace;
+            weakSelf.beautyButton.selected = !weakSelf.session.beautyFace;
         }];
     }
     return _beautyButton;
@@ -353,29 +361,32 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
         _startLiveButton = [UIButton new];
         _startLiveButton.size = CGSizeMake(self.width - 60, 44);
         _startLiveButton.left = 30;
-        _startLiveButton.bottom = self.height - 50;
+        _startLiveButton.bottom = self.height - 20;
         _startLiveButton.layer.cornerRadius = _startLiveButton.height/2;
         [_startLiveButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         [_startLiveButton.titleLabel setFont:[UIFont systemFontOfSize:16]];
         [_startLiveButton setTitle:@"开始直播" forState:UIControlStateNormal];
         [_startLiveButton setBackgroundColor:[UIColor colorWithRed:50 green:32 blue:245 alpha:1]];
         _startLiveButton.exclusiveTouch = YES;
-        __weak typeof(self) _self = self;
+        __typeof(self) weakSelf = self;
         [_startLiveButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id sender) {
-            _self.startLiveButton.selected = !_self.startLiveButton.selected;
-            if (_self.startLiveButton.selected) {
-                [_self.startLiveButton setTitle:@"结束直播" forState:UIControlStateNormal];
+            weakSelf.startLiveButton.selected = !weakSelf.startLiveButton.selected;
+            if (weakSelf.startLiveButton.selected) {
+                [weakSelf.startLiveButton setTitle:@"结束直播" forState:UIControlStateNormal];
                 
-                  _self.backgroundColor = [UIColor clearColor];
+                  weakSelf.backgroundColor = [UIColor clearColor];
 
                 LFLiveStreamInfo *stream = [LFLiveStreamInfo new];
-                stream.url = @"rtmp://czwblog.com:1935/live/wzh";
-                [_self.session startLive:stream];
+//                stream.url = @"rtmp://czwblog.com:1935/live/wzh";
+//                用VLC播放File->open network->输入：rtmp://(你的ip):1935/rtmplive/room
+                stream.url = @"rtmp://10.2.22.84:1935/rtmplive/room";
+
+                [weakSelf.session startLive:stream];
             } else {
-                [_self.startLiveButton setTitle:@"开始直播" forState:UIControlStateNormal];
-                [_self.session stopLive];
+                [weakSelf.startLiveButton setTitle:@"开始直播" forState:UIControlStateNormal];
+                [weakSelf.session stopLive];
                 
-                _self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_zbfx"]];
+                weakSelf.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_zbfx"]];
 
             }
         }];
@@ -384,7 +395,10 @@ inline static NSString *formatedSpeed(float bytes, float elapsed_milli) {
 }
 
 
-//ffmpeg -re -i /Users/wszyxc/Desktop/01-Swift简介.mp4 -vcodec libx264 -acodec aac -strict -2 -f flv rtmp://czwblog.com/live/wzh3
+- (void)dealloc
+{
+    NSLog(@"LFLivePreview dealloc");
+}
 
 
 @end

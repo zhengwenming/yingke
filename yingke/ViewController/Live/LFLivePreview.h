@@ -8,12 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^Block)();
 
 @interface LFLivePreview : UIView
+@property (nonatomic, strong) UIButton *closeButton;  //关闭按钮
+
+@property (nonatomic, strong) UISlider *meibaiSlider;  //美白的slider
+@property (nonatomic, strong) UISlider *mopiSlider;  //磨皮的slider
 
 
-@property (copy,nonatomic) Block block;
+
 
 
 @end
