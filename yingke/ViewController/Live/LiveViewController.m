@@ -7,6 +7,11 @@
 //
 
 #import "LiveViewController.h"
+#import "LFLivePreview.h"
+
+
+
+
 
 @interface LiveViewController ()
 
@@ -14,23 +19,48 @@
 
 @implementation LiveViewController
 
+
+
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    UIButton *centerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    centerBtn.frame = CGRectMake(0, 0, 100, 60);
-    centerBtn.center = self.view.center;
-    centerBtn.backgroundColor = [UIColor redColor];
-    [centerBtn setTitle:@"返回" forState:UIControlStateNormal];
-    [centerBtn addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:centerBtn];
+    
+    
     
 }
--(void)back:(UIButton *)sender{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+
+- (void)setupBgImageView{
+    
+    UIImageView *bgImageView = [[UIImageView alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    
+    bgImageView.contentMode = UIViewContentModeCenter;
+    
+    bgImageView.image = [UIImage imageNamed:@"bg_zbfx"];
+    
+    [self.view insertSubview:bgImageView atIndex:0];
 }
 
+
+- (void)loadView{
+    
+    LFLivePreview *preView = [[LFLivePreview alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    
+    self.view = preView;
+    
+    
+    preView.block = ^{
+        
+        [self dismissViewControllerAnimated:YES completion:^{
+            
+        }];
+        
+    };
+    
+    
+}
+- (void)dealloc
+{
+    NSLog(@"LiveViewController");
+}
 @end

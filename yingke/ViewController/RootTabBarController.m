@@ -34,8 +34,8 @@
     
     UIButton *cameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     
-    [cameraBtn setImage:[UIImage imageNamed:@"tab_room"] forState:UIControlStateNormal];
-    [cameraBtn setImage:[UIImage imageNamed:@"tab_room_p"] forState:UIControlStateHighlighted];
+    [cameraBtn setImage:[UIImage imageNamed:@"tab_launch"] forState:UIControlStateNormal];
+    [cameraBtn setImage:[UIImage imageNamed:@"tab_launch"] forState:UIControlStateHighlighted];
     
     //自适应,自动根据按钮图片和文字计算按钮尺寸
     [cameraBtn sizeToFit];

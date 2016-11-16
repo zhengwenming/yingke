@@ -10,6 +10,18 @@
 #ifndef yingke_pch
 #define yingke_pch
 
+#ifdef __OBJC__
+#import "AFNetworking.h"
+#import "UIImageView+WebCache.h"
 
+#import <UIKit/UIKit.h>
+#import "UIView+SLExtension.h"
+
+
+#import "MJExtension.h"
+
+#import <objc/runtime.h>
+
+#endif
 
 #endif /* yingke_pch */
